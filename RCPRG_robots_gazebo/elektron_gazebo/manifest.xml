@@ -1,0 +1,22 @@
+<package>
+  <description brief="elektron_gazebo">
+
+     elektron_gazebo
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/elektron_gazebo</url>
+  <depend package="gazebo_plugins"/>
+  <depend package="gazebo_worlds"/>
+  <depend package="elektron_defs"/>
+  <depend package="fake_localization"/>
+  <depend package="tf"/>
+  <depend package="std_msgs"/>
+  <depend package="robot_state_publisher"/>
+  <depend package="move_base"/>
+
+</package>
+
+

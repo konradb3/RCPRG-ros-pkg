@@ -1,0 +1,16 @@
+<package>
+  <description brief="elektron_defs">
+
+	This package contains XML (and xacro macros) descriptions of robot kinematics in the format
+  defined at Willow Garage for the erratic robot.
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/elektron_defs</url>
+  <depend package="xacro"/>
+
+</package>
+
+

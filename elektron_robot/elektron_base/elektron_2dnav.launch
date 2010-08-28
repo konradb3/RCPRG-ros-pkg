@@ -1,0 +1,34 @@
+<launch>
+
+  	<!-- start up robot -->
+  	<include file="$(find elektron_base)/elektron.launch"/>
+        
+        <node name="tf_map_link" pkg="tf" type="static_transform_publisher" args="-5 -5 0 0 0 0 odom map 40" />
+  	<!-- Fake Localization -->
+	<!--  <node pkg="fake_localization" type="fake_localization" name="fake_localization" respawn="true" output="screen" >
+    		<param name="odom_frame_id" value="odom"/>
+  	</node> -->
+
+  	<!-- for moving -->
+	<node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+		<remap from="base_scan" to="scan" />
+    		<param name="controller_frequency" value="10.0" />
+    		<param name="footprint_padding" value="0.005" />
+    		<param name="controller_patience" value="15.0" />
+    		<param name="clearing_radius" value="0.08" />
+    		<param name="global_frame" value="0.59" />
+    
+    		<rosparam file="$(find elektron_gazebo)/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    		<rosparam file="$(find elektron_gazebo)/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    		<rosparam file="$(find elektron_gazebo)/local_costmap_params.yaml" command="load" />
+    		<rosparam file="$(find elektron_gazebo)/global_costmap_params.yaml" command="load" />
+    		<rosparam file="$(find elektron_gazebo)/navfn_params.yaml" command="load" />
+    		<rosparam file="$(find elektron_gazebo)/base_local_planner_params.yaml" command="load" />
+	</node>
+
+	<!-- load map -->
+	<!--  <node name="map_node" pkg="map_server" type="map_server" args="$(find gazebo_worlds)/Media/materials/textures/willowMap.png 0.1" respawn="false" output="screen" /> -->
+<!--	<node name="map_node" pkg="map_server" type="map_server" args="$(find gazebo_worlds)/Media/materials/textures/map_blank.png 0.1" respawn="false" output="screen" />
+-->
+</launch>
+

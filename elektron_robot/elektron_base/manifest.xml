@@ -1,0 +1,16 @@
+<package>
+  <description brief="elektron_base">
+	A ROS node which provides access to the Elektron mobile robot.
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/elektron_base</url>
+  <depend package="roscpp"/>
+  <depend package="geometry_msgs"/>
+  <depend package="nav_msgs"/>
+  <depend package="tf"/>
+
+</package>
+
+

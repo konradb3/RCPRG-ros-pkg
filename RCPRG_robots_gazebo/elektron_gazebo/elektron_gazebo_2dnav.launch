@@ -1,0 +1,73 @@
+<launch>
+
+  <!-- start up robot -->
+  <include file="$(find elektron_gazebo)/elektron_gazebo.launch"/>
+
+  <!-- Fake Localization -->
+<!--  <node pkg="fake_localization" type="fake_localization" name="fake_localization" respawn="true" output="screen" >
+    <param name="odom_frame_id" value="odom"/>
+  </node> -->
+
+  <!--- Run AMCL -->
+<node pkg="amcl" type="amcl" name="amcl" output="screen">
+  <remap from="scan" to="base_scan" />
+  <!-- Publish scans from best pose at a max of 10 Hz -->
+  <param name="odom_model_type" value="diff"/>
+  <param name="odom_alpha5" value="0.1"/>
+  <param name="transform_tolerance" value="0.2" />
+  <param name="gui_publish_rate" value="10.0"/>
+  <param name="laser_max_beams" value="90"/>
+  <param name="min_particles" value="500"/>
+  <param name="max_particles" value="5000"/>
+  <param name="kld_err" value="0.05"/>
+  <param name="kld_z" value="0.99"/>
+  <param name="odom_alpha1" value="0.8"/>
+  <param name="odom_alpha2" value="0.2"/>
+  <!-- translation std dev, m -->
+  <param name="odom_alpha3" value="0.8"/>
+  <param name="odom_alpha4" value="0.2"/>
+  <param name="laser_z_hit" value="0.5"/>
+  <param name="laser_z_short" value="0.05"/>
+  <param name="laser_z_max" value="0.05"/>
+  <param name="laser_z_rand" value="0.5"/>
+  <param name="laser_sigma_hit" value="0.2"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_lambda_short" value="0.1"/>
+  <param name="laser_model_type" value="likelihood_field"/>
+  <!-- <param name="laser_model_type" value="beam"/> -->
+  <param name="laser_likelihood_max_dist" value="2.0"/>
+  <param name="update_min_d" value="0.2"/>
+  <param name="update_min_a" value="0.5"/>
+  <param name="odom_frame_id" value="odom"/>
+  <param name="resample_interval" value="1"/>
+  <param name="transform_tolerance" value="0.1"/>
+  <param name="recovery_alpha_slow" value="0.0"/>
+  <param name="recovery_alpha_fast" value="0.0"/>
+</node>
+
+
+  <!-- for moving -->
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+  <!--  <remap from="odom" to="erratic_odometry/odom" /> -->
+    <param name="controller_frequency" value="10.0" />
+    <param name="footprint_padding" value="0.005" />
+    <param name="controller_patience" value="15.0" />
+    <param name="clearing_radius" value="0.08" />
+    <param name="global_frame" value="0.59" />
+    
+    <rosparam file="$(find elektron_gazebo)/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find elektron_gazebo)/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <!--
+    -->
+    <rosparam file="$(find elektron_gazebo)/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find elektron_gazebo)/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find elektron_gazebo)/navfn_params.yaml" command="load" />
+    <rosparam file="$(find elektron_gazebo)/base_local_planner_params.yaml" command="load" />
+  </node>
+
+  <!-- load map -->
+  <node name="map_node" pkg="map_server" type="map_server" args="$(find gazebo_worlds)/Media/materials/textures/willowMap.png 0.1" respawn="false" output="screen" />
+ <!--  <node name="map_node" pkg="map_server" type="map_server" args="$(find gazebo_worlds)/Media/materials/textures/map_blank.png 0.1" respawn="false" output="screen" />
+-->
+</launch>
+

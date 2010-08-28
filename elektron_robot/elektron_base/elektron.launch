@@ -1,0 +1,28 @@
+<launch>
+
+  <!-- Create a transform sender for linking these frames. -->
+  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_link base_footprint 40" />	
+
+  <node name="tf_laser_link" pkg="tf" type="static_transform_publisher" args="0 0 0.3 0 0 0 base_link base_laser_link 40" />	
+
+  <!-- send elektron.xml to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find elektron_defs)/robots/elektron.udrf.xacro'" />
+
+  <!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" type="string" value="" />
+  </node>
+
+  <!-- load controllers -->
+  <node name="elektron" pkg="elektron_base" type="elektron_base_node" respawn="true" output="screen"/>
+
+  <node name="base_laser" pkg="sicktoolbox_wrapper" type="sicklms" respawn="true" output="screen">
+    <param name="port" type="string" value="/dev/ttyUSB0" />
+    <param name="baud" type="int" value="500000" />
+    <param name="resolution" type="double" value="0.5" />
+    <param name="angle" type="int" value="180" />
+    <param name="frame_id" type="string" value="base_laser_link" />
+  </node>
+</launch>
+

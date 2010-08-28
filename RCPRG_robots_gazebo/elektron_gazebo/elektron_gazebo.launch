@@ -1,0 +1,30 @@
+<launch>
+  <!-- this launch file corresponds to robot model in ros-pkg/robot_descriptions/pr2/erratic_defs/robots for full erratic -->
+  <!-- start up wg world -->
+  <include file="$(find gazebo)/launch/wg_world.launch"/>
+
+  <!-- Create a transform sender for linking these frames. -->
+  <node name="tf_footprint_base" pkg="tf" type="static_transform_publisher" args="0 0 0 0 0 0 base_link base_footprint 40" />	
+
+  <node name="tf_laser_link" pkg="tf" type="static_transform_publisher" args="0 0 0.3 0 0 0 base_link base_laser_link 40" />	
+
+  <!-- send elektron.xml to param server -->
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find elektron_defs)/robots/elektron.udrf.xacro'" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_elektron" pkg="gazebo_tools" type="gazebo_model" args="-z 0.051 -p robot_description spawn robot_description" respawn="false" output="screen" />
+
+<!-- Robot state publisher -->
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher">
+    <param name="publish_frequency" type="double" value="50.0" />
+    <param name="tf_prefix" type="string" value="" />
+  </node>
+
+  <!-- Fake Calibration -->
+<!--  <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
+        args="pub /calibrated std_msgs/Bool true" />
+-->
+  <!-- load controllers -->
+  <node name="diffdrive" pkg="gazebo_plugins" type="gazebo_ros_diffdrive" respawn="true" output="screen"/>
+</launch>
+
