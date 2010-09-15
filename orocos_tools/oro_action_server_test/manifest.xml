@@ -1,0 +1,18 @@
+<package>
+  <description brief="oro_action_server_test">
+
+     oro_action_server_test
+
+  </description>
+  <author>konrad</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/oro_action_server_test</url>
+  <depend package="oro_action_server"/>
+  <depend package="rtt"/>
+  <depend package="ocl"/>
+  <depend package="rtt_ros_integration_pr2_controllers_msgs"/>
+
+</package>
+
+
