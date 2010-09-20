@@ -17,25 +17,30 @@
 
 /** Main entry point */
 int main(int argc, char **argv) {
-	int height, width;
+	int height, width, input;
 	std::string dev;
 	sensor_msgs::Image image;
 	sensor_msgs::CameraInfo cam_info;
 
 	ros::init(argc, argv, "camerav4l2_node");
 	ros::NodeHandle node("camera");
+	ros::NodeHandle nh("~");
 
-	CameraInfoManager cinfo(node);
+	CameraInfoManager cinfo(nh);
 
-	image_transport::ImageTransport it(node);
+	image_transport::ImageTransport it(nh);
 	image_transport::CameraPublisher image_pub = it.advertiseCamera(
 			"image_raw", 1);
 
-	node.param<int>("width", width, 640);
-	node.param<int>("height", height, 480);
-	node.param<std::string>("device", dev, "/dev/video0");
+	nh.param<int>("width", width, 640);
+	nh.param<int>("height", height, 480);
+	nh.param<int>("input", input, 0);
+	nh.param<std::string>("device", dev, "/dev/video0");
 
+	ROS_INFO("Opening device : %s", dev.c_str());
 	Camera cam(dev.c_str(), width, height);
+
+	cam.setInput(input);
 
 	image.header.frame_id = "camara";
 	image.header.seq = 0;

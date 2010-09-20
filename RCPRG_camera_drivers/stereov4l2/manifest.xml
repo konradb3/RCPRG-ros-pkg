@@ -1,0 +1,18 @@
+<package>
+  <description brief="camerav4l2">
+
+     camerav4l2
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/camerav4l2</url>
+  <depend package="image_transport"/>
+  <depend package="tf"/>
+  <depend package="camera_info_manager"/>
+  <depend package="driver_base"/>
+
+</package>
+
+
