@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_std_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_actionlib_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_pr2_controllers_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find oro_action_server_test)/lib</value></simple>
+
+<struct name="goal" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple><!-- type of connection: 0 means Data -->
+  <simple name="size" type="short"><value>1</value></simple><!-- buffer size -->
+  <simple name="transport" type="short"><value>3</value></simple><!--3 means ROS-->
+  <simple name="name_id" type="string"><value>/joint_trajectory_action/goal</value></simple><!-- topic name -->
+</struct>
+
+<struct name="cancel" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple><!-- type of connection: 0 means Data -->
+  <simple name="size" type="short"><value>1</value></simple><!-- buffer size -->
+  <simple name="transport" type="short"><value>3</value></simple><!--3 means ROS-->
+  <simple name="name_id" type="string"><value>/joint_trajectory_action/cancel</value></simple><!-- topic name -->
+</struct>
+
+<struct name="feedback" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple><!-- type of connection: 0 means Data -->
+  <simple name="size" type="short"><value>1</value></simple><!-- buffer size -->
+  <simple name="transport" type="short"><value>3</value></simple><!--3 means ROS-->
+  <simple name="name_id" type="string"><value>/joint_trajectory_action/feedback</value></simple><!-- topic name -->
+</struct>
+
+<struct name="status" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple><!-- type of connection: 0 means Data -->
+  <simple name="size" type="short"><value>1</value></simple><!-- buffer size -->
+  <simple name="transport" type="short"><value>3</value></simple><!--3 means ROS-->
+  <simple name="name_id" type="string"><value>/joint_trajectory_action/status</value></simple><!-- topic name -->
+</struct>
+
+<struct name="result" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple><!-- type of connection: 0 means Data -->
+  <simple name="size" type="short"><value>1</value></simple><!-- buffer size -->
+  <simple name="transport" type="short"><value>3</value></simple><!--3 means ROS-->
+  <simple name="name_id" type="string"><value>/joint_trajectory_action/result</value></simple><!-- topic name -->
+</struct>
+
+<struct name="Test" type="Test">
+  <struct name="Activity" type="PeriodicActivity">
+    <simple name="Period" type="double"><value>0.1</value></simple>
+    <simple name="Priority" type="short"><value>0</value></simple>
+    <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  </struct>
+  <simple name="AutoConf" type="boolean"><value>1</value></simple>
+  <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  <struct name="Ports" type="PropertyBag">
+	<simple name="goal" type="string"><value> goal</value></simple>
+	<simple name="cancel" type="string"><value> cancel</value></simple>
+	<simple name="result" type="string"><value> result</value></simple>
+	<simple name="feedback" type="string"><value> feedback</value></simple>
+	<simple name="status" type="string"><value> status</value></simple>
+  </struct>
+</struct>
+
+</properties>

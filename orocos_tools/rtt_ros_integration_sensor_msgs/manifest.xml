@@ -1,0 +1,20 @@
+<package>
+  <description brief="rtt_ros_integration_sensor_msgs">
+
+     rtt_ros_integration_sensor_msgs
+
+  </description>
+  <author>konrad</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/rtt_ros_integration_sensor_msgs</url>
+  <depend package="rtt_ros_integration"/>
+  <depend package="sensor_msgs"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
+
+

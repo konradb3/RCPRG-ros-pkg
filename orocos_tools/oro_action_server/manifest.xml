@@ -1,0 +1,20 @@
+<package>
+  <description brief="oro_action_server">
+
+     oro_action_server
+
+  </description>
+  <author>konrad</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/oro_action_server</url>
+  <depend package="actionlib"/>
+  <depend package="rtt"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include"/>
+  </export>
+
+</package>
+
+
