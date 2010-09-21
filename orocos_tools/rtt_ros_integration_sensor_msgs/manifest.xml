@@ -9,7 +9,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/rtt_ros_integration_sensor_msgs</url>
   <depend package="rtt_ros_integration"/>
+  <depend package="rtt_ros_integration_std_msgs"/>
+  <depend package="rtt_ros_integration_geometry_msgs"/>
   <depend package="sensor_msgs"/>
+  <depend package="roslib"/>
 
   <export>
     <cpp cflags="-I${prefix}/include"/>

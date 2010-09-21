@@ -1,16 +1,16 @@
 <package>
-  <description brief="rtt_ros_integration_trajectory_msgs">
+  <description brief="rtt_ros_integration_geometry_msgs">
 
-     rtt_ros_integration_trajectory_msgs
+     rtt_ros_geometry_msgs
 
   </description>
-  <author>konrad</author>
+  <author>Konrad Banachowicz</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/rtt_ros_integration_trajectory_msgs</url>
+  <url>http://ros.org/wiki/rtt_ros_integration_geometry_msgs</url>
   <depend package="rtt_ros_integration"/>
   <depend package="rtt_ros_integration_std_msgs"/>
-  <depend package="trajectory_msgs"/>
+  <depend package="geometry_msgs"/>
 
   <export>
     <cpp cflags="-I${prefix}/include"/>
