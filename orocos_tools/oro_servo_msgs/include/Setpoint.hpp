@@ -8,10 +8,11 @@
 #ifndef SETPOINT_HPP_
 #define SETPOINT_HPP_
 
-struct Setpoint {
-	double position;
-	double velocity;
-	double acceleration;
+struct Setpoint
+{
+  double position;
+  double velocity;
+  double acceleration;
 };
 
 #endif /* SETPOINT_HPP_ */

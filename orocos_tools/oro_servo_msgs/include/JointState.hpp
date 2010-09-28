@@ -8,10 +8,11 @@
 #ifndef JOINTSTATE_HPP_
 #define JOINTSTATE_HPP_
 
-struct JointState {
-	double position;
-	double velocity;
-	double acceleration;
+struct JointState
+{
+  double position;
+  double velocity;
+  double acceleration;
 };
 
 #endif /* JOINTSTATE_HPP_ */

@@ -13,22 +13,22 @@
 
 class JointStatePublisher : public RTT::TaskContext
 {
-	public:
-		JointStatePublisher(const std::string& name);
-		~JointStatePublisher();
+public:
+  JointStatePublisher(const std::string& name);
+  ~JointStatePublisher();
 
-		bool configureHook();
-		void updateHook();
-	protected:
-		RTT::InputPort<std::vector<JointState> > msrJnt_port;
-		RTT::OutputPort<sensor_msgs::JointState> jointState_port;
+  bool configureHook();
+  void updateHook();
+protected:
+  RTT::InputPort<std::vector<JointState> > msrJnt_port;
+  RTT::OutputPort<sensor_msgs::JointState> jointState_port;
 
-		RTT::Property<int> nJoints_prop;
-	private:
-		sensor_msgs::JointState jState;
-		std::vector<JointState> msrJnt;
-		int nJoints;
-		std::vector<std::string> names;
+  RTT::Property<int> nJoints_prop;
+private:
+  sensor_msgs::JointState jState;
+  std::vector<JointState> msrJnt;
+  int nJoints;
+  std::vector<std::string> names;
 };
 
 #endif
