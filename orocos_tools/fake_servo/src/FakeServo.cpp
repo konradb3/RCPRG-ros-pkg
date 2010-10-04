@@ -10,7 +10,7 @@
 #include "FakeServo.h"
 
 FakeServo::FakeServo(const std::string& name) :
-    RTT::TaskContext(name), setpoint_port("setpoint"), jointState_port(
+    RTT::TaskContext(name, PreOperational), setpoint_port("setpoint"), jointState_port(
       "jointState"), numberOfJoints_prop("numberOfJoints", "", 0)
 {
 

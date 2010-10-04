@@ -140,7 +140,15 @@ void JointTrajectoryAction::goalCB(GoalHandle gh)
         trajectory[i].accelerations[j]
         = g->trajectory.points[i].accelerations[remapTable[j]];
       }
-      trajectory[i].time_from_start = g->trajectory.points[i].time_from_start;
+
+      if(i == 0)
+      {
+        trajectory[i].time_from_start = g->trajectory.points[i].time_from_start;
+      }
+      else
+      {
+        trajectory[i].time_from_start = g->trajectory.points[i].time_from_start - g->trajectory.points[i-1].time_from_start;
+      }
     }
 
     endPoint = g->trajectory.points.size();

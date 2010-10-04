@@ -97,7 +97,7 @@ void JointSplineTrajectoryGenerator::updateHook()
             getQuinticSplineCoefficients(
               trajectoryOld.positions[j], trajectoryOld.velocities[j], trajectoryOld.accelerations[j],
               trajectoryNew.positions[j], trajectoryNew.velocities[j], trajectoryNew.accelerations[j],
-              trajectoryNew.time_from_start.toSec() - trajectoryOld.time_from_start.toSec(),
+              trajectoryNew.time_from_start.toSec(),
               coeff[j]);
           }
           else if (trajectoryOld.velocities.size() > 0 && trajectoryNew.velocities.size() > 0)
@@ -105,7 +105,7 @@ void JointSplineTrajectoryGenerator::updateHook()
             getCubicSplineCoefficients(
               trajectoryOld.positions[j], trajectoryOld.velocities[j],
               trajectoryNew.positions[j], trajectoryNew.velocities[j],
-              trajectoryNew.time_from_start.toSec() - trajectoryOld.time_from_start.toSec(),
+              trajectoryNew.time_from_start.toSec(),
               coeff[j]);
           }
           else
@@ -114,7 +114,7 @@ void JointSplineTrajectoryGenerator::updateHook()
             if (trajectoryNew.time_from_start.toSec() == 0.0)
               coeff[j][1] = 0.0;
             else
-              coeff[j][1] = (trajectoryNew.positions[j] - trajectoryOld.positions[j]) / (trajectoryNew.time_from_start.toSec() - trajectoryOld.time_from_start.toSec());
+              coeff[j][1] = (trajectoryNew.positions[j] - trajectoryOld.positions[j]) / trajectoryNew.time_from_start.toSec();
             coeff[j][2] = 0.0;
             coeff[j][3] = 0.0;
             coeff[j][4] = 0.0;
@@ -122,7 +122,7 @@ void JointSplineTrajectoryGenerator::updateHook()
           }
         }
 
-        endTime = (trajectoryNew.time_from_start.toSec() - trajectoryOld.time_from_start.toSec())/dt;
+        endTime = trajectoryNew.time_from_start.toSec()/dt;
         time = 0;
         trajectoryOld = trajectoryNew;
         bufferReady = true;

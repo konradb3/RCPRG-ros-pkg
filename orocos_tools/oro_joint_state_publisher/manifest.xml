@@ -1,7 +1,7 @@
 <package>
-  <description brief="joint_state_publisher">
+  <description brief="oro_joint_state_publisher">
 
-     joint_state_publisher
+     oro_joint_state_publisher
 
   </description>
   <author>Konrad Banachowicz</author>

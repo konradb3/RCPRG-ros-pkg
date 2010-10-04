@@ -23,6 +23,7 @@ public:
 	FakeServo(const std::string& name);
 	virtual ~FakeServo();
 
+  bool configureHook();
 	bool startHook();
 	void updateHook();
 protected:
