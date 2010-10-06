@@ -1,0 +1,15 @@
+<package>
+  <description brief="sarkofag_defs">
+
+     sarkofag_defs
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sarkofag_defs</url>
+  <depend package="xacro"/>
+
+</package>
+
+

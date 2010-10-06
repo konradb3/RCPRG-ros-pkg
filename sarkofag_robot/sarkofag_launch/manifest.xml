@@ -1,0 +1,25 @@
+<package>
+  <description brief="sarkofag_launch">
+
+     sarkofag_launch
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sarkofag_launch</url>
+  <depend package="sarkofag_defs"/>
+  <depend package="fake_servo"/>
+  <depend package="oro_joint_state_publisher"/>
+  <depend package="rtt"/>
+  <depend package="ocl"/>
+  <depend package="rtt_ros_integration_sensor_msgs"/>
+  <depend package="joint_spline_trajectory_generator"/>
+  <depend package="oro_joint_trajectory_action"/>
+
+  <depend package="actionlib"/>
+  <depend package="pr2_controllers_msgs"/>
+
+</package>
+
+
