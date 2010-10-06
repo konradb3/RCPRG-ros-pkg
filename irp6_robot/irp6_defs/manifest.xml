@@ -1,0 +1,15 @@
+<package>
+  <description brief="irp6_defs">
+
+     irp6_defs
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/irp6_defs</url>
+  <depend package="xacro"/>
+
+</package>
+
+

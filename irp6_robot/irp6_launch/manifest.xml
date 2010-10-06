@@ -1,0 +1,16 @@
+<package>
+  <description brief="irp6_launch">
+
+     irp6_launch
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/irp6_launch</url>
+  <depend package="xacro"/>
+  <depend package="irp6_defs"/>
+
+</package>
+
+
