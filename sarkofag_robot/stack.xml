@@ -1,0 +1,13 @@
+<stack>
+  <description brief="sarkofag_robot">sarkofag_robot</description>
+  <author>Maintained by Konrad Banachowicz</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sarkofag_robot</url>
+  <depend stack="common" /> <!-- actionlib, xacro -->
+  <depend stack="orocos_toolchain_ros" /> <!-- rtt, ocl -->
+  <depend stack="orocos_tools" /> <!-- oro_servo_msgs, joint_spline_trajectory_generator, oro_joint_trajectory_action, fake_servo, oro_joint_state_publisher, rtt_ros_integration_sensor_msgs -->
+  <depend stack="pr2_controllers" /> <!-- pr2_controllers_msgs -->
+  <depend stack="ros" />
+
+</stack>
