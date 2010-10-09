@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "cpf.dtd">
+<properties>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_std_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_sensor_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_actionlib_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_pr2_controllers_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find rtt_ros_integration_trajectory_msgs)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find irp6_servo)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find oro_joint_state_publisher)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find oro_joint_trajectory_action)/lib/orocos</value></simple>
+<simple name="Import" type="string"><value>$(find joint_spline_trajectory_generator)/lib/orocos</value></simple>
+
+<struct name="jointState" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>/joint_states</value></simple>
+</struct>
+
+<struct name="JointStatePublisher" type="JointStatePublisher">
+  <struct name="Activity" type="PeriodicActivity">
+    <simple name="Period" type="double"><value>0.01</value></simple>
+    <simple name="Priority" type="short"><value>2</value></simple>
+    <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  </struct>
+  
+  <simple name="AutoConf" type="boolean"><value>1</value></simple>
+  <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  
+  <struct name="Properties" type="PropertyBag">
+    <simple name="numberOfJoints" type="short"><value>6</value></simple>
+    <simple name="joint0_name" type="string"><value>joint1</value></simple>
+    <simple name="joint1_name" type="string"><value>joint2</value></simple>
+    <simple name="joint2_name" type="string"><value>joint3</value></simple>
+    <simple name="joint3_name" type="string"><value>joint4</value></simple>
+    <simple name="joint4_name" type="string"><value>joint5</value></simple>
+    <simple name="joint5_name" type="string"><value>joint6</value></simple>
+  </struct>
+  
+  <struct name="Ports" type="PropertyBag">
+	<simple name="msrJnt" type="string"><value> msrJnt</value></simple>
+    <simple name="jointState" type="string"><value> jointState</value></simple>
+  </struct>
+</struct>
+
+<struct name="Servo" type="IRP6pServo">
+  <struct name="Activity" type="PeriodicActivity">
+    <simple name="Period" type="double"><value>0.002</value></simple>
+    <simple name="Priority" type="short"><value>5</value></simple>
+    <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  </struct>
+
+  <simple name="AutoConf" type="boolean"><value>1</value></simple>
+  <simple name="AutoStart" type="boolean"><value>1</value></simple>
+
+  <struct name="Ports" type="PropertyBag">
+	  <simple name="jointState" type="string"><value> msrJnt</value></simple>
+    <simple name="setpoint" type="string"><value> setpoint</value></simple>
+  </struct>
+</struct>
+
+</properties>
