@@ -1,0 +1,17 @@
+<package>
+  <description brief="irp6_servo">
+
+     irp6_servo
+
+  </description>
+  <author>Konrad Banachowicz</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/irp6_servo</url>
+  <depend package="rtt"/>
+  <depend package="ocl"/>
+  <depend package="oro_servo_msgs"/>
+
+</package>
+
+
