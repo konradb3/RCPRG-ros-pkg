@@ -32,10 +32,12 @@ protected:
 
 	RTT::Property<int> numberOfJoints_prop;
 private:
-	std::vector<Setpoint> setpoint;
-	std::vector<JointState> jointState;
+	std::vector<Setpoint> setpoint_;
+	std::vector<JointState> joint_state_;
 
-	int numberOfJoints;
+  std::vector<double> initial_pos_;
+
+	unsigned int numberOfJoints_;
 };
 
 #endif /* FAKESERVO_H_ */
