@@ -256,14 +256,11 @@ uint64_t HI_moxa::readWriteHardware(void)
 
 void HI_moxa::resetCounters(void)
 {
-
   for (int i = 0; i < last_drive_number; i++)
   {
-
     servo_data[i].current_absolute_position = 0L;
     servo_data[i].previous_absolute_position = 0L;
     servo_data[i].current_position_inc = 0.0;
-
   }
 }
 
@@ -279,7 +276,7 @@ void HI_moxa::finishSynchro(int drive_offset)
 
 bool HI_moxa::isImpulseZero(int drive_offset)
 {
-  return servo_data[drive_offset].drive_status.synchroZero;
+  return (servo_data[drive_offset].drive_status.synchroZero != 0);
 }
 
 void HI_moxa::resetPosition(int drive_offset)

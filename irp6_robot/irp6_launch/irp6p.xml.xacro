@@ -19,6 +19,41 @@
   <simple name="name_id" type="string"><value>/joint_states</value></simple>
 </struct>
 
+<struct name="goal" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/goal</value></simple>
+</struct>
+
+<struct name="cancel" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/cancel</value></simple>
+</struct>
+
+<struct name="status" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/status</value></simple>
+</struct>
+
+<struct name="feedback" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/feedback</value></simple>
+</struct>
+
+<struct name="result" type="ConnPolicy">
+  <simple name="type" type="short"><value>0</value></simple>
+  <simple name="size" type="short"><value>1</value></simple>
+  <simple name="transport" type="short"><value>3</value></simple>
+  <simple name="name_id" type="string"><value>irp6p_controller/joint_trajectory_action/result</value></simple>
+</struct>
+
 <struct name="JointStatePublisher" type="JointStatePublisher">
   <struct name="Activity" type="PeriodicActivity">
     <simple name="Period" type="double"><value>0.01</value></simple>
@@ -55,10 +90,68 @@
   <simple name="AutoConf" type="boolean"><value>1</value></simple>
   <simple name="AutoStart" type="boolean"><value>1</value></simple>
 
+  <struct name="Properties" type="PropertyBag">
+    <simple name="auto_synchronize" type="boolean"><value>1</value></simple>
+  </struct>
+
   <struct name="Ports" type="PropertyBag">
 	  <simple name="jointState" type="string"><value> msrJnt</value></simple>
     <simple name="setpoint" type="string"><value> setpoint</value></simple>
   </struct>
 </struct>
+
+<struct name="JointSplineTrajectoryGenerator" type="JointSplineTrajectoryGenerator">
+  <struct name="Activity" type="PeriodicActivity">
+    <simple name="Period" type="double"><value>0.001</value></simple>
+    <simple name="Priority" type="short"><value>5</value></simple>
+    <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  </struct>
+  <simple name="AutoConf" type="boolean"><value>1</value></simple>
+  <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  
+  <struct name="Properties" type="PropertyBag">
+    <simple name="numberOfJoints" type="short"><value>6</value></simple>
+  </struct>
+  
+  <struct name="Ports" type="PropertyBag">
+	<simple name="trajectoryPoint" type="string"><value> trajectory</value></simple>
+    <simple name="setpoint" type="string"><value> setpoint</value></simple>
+    <simple name="jointState" type="string"><value> msrJnt</value></simple>
+    <simple name="bufferReady" type="string"><value> buf</value></simple>
+  </struct>
+</struct>
+
+<struct name="JointTrajectoryAction" type="JointTrajectoryAction">
+  <struct name="Activity" type="PeriodicActivity">
+ 	<simple name="Period" type="double"><value>0.1</value></simple>
+    <simple name="Priority" type="short"><value>2</value></simple>
+    <simple name="Scheduler" type="string"><value>ORO_SCHED_RT</value></simple>
+  </struct>
+  
+  <simple name="AutoConf" type="boolean"><value>1</value></simple>
+  <simple name="AutoStart" type="boolean"><value>1</value></simple>
+  
+  <struct name="Properties" type="PropertyBag">
+    <simple name="numberOfJoints" type="short"><value>6</value></simple>
+    <simple name="joint0_name" type="string"><value>joint1</value></simple>
+    <simple name="joint1_name" type="string"><value>joint2</value></simple>
+    <simple name="joint2_name" type="string"><value>joint3</value></simple>
+    <simple name="joint3_name" type="string"><value>joint4</value></simple>
+    <simple name="joint4_name" type="string"><value>joint5</value></simple>
+    <simple name="joint5_name" type="string"><value>joint6</value></simple>
+  </struct>
+  
+  <struct name="Ports" type="PropertyBag">
+    <simple name="trajectoryPoint" type="string"><value> trajectory</value></simple>
+    <simple name="bufferReady" type="string"><value> buf</value></simple>
+
+    <simple name="goal" type="string"><value> goal</value></simple>
+    <simple name="cancel" type="string"><value> cancel</value></simple>
+    <simple name="result" type="string"><value> result</value></simple>
+    <simple name="feedback" type="string"><value> feedback</value></simple>
+    <simple name="status" type="string"><value> status</value></simple>
+  </struct>
+</struct>
+
 
 </properties>

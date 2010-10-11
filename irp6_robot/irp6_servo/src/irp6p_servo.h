@@ -35,6 +35,9 @@ const double 	SYNCHRO_JOINT_POSITION[6] = { SYNCHRO_MOTOR_POSITION[0] - GEAR[0] 
 
 const int ENC_RES[6] = {4000, 4000, 4000, 4000, 4000, 2000};
 
+const double LOWER_MOTOR_LIMIT[6] = { -470, -110, -80, -70, -80, -1000};
+const double UPPER_MOTOR_LIMIT[6] = { 450, 100, 100, 380, 490, 3000};
+
 const double A[6] = {0.412429378531, 0.655629139073, 0.315789473684, 0.548946716233, 0.391982182628, 0.3};
 const double BB0[6] = {2.594932 * 0.6, 1.030178 * 0.6, 1.997464 * 0.6, 1.576266 * 0.4, 1.114648 * 0.4, 1.364 * 0.4};
 const double BB1[6] = {2.504769 * 0.6, 0.986142 * 0.6, 1.904138 * 0.6, 1.468599 * 0.4, 1.021348 * 0.4, 1.264 * 0.4};
@@ -42,7 +45,7 @@ const double BB1[6] = {2.504769 * 0.6, 0.986142 * 0.6, 1.904138 * 0.6, 1.468599 
 const int MAX_PWM = 2048;
 
 const double SYNCHRO_STEP_COARSE[6] = {-0.03, -0.03, -0.03, -0.03, -0.03, -0.05};
-const double SYNCHRO_STEP_FINE[6] = {-0.007, -0.007, -0.007, -0.007, -0.007, -0.05};
+const double SYNCHRO_STEP_FINE[6] = {0.007, 0.007, 0.007, 0.007, 0.007, 0.05};
 
 class Regulator
 {
@@ -93,12 +96,14 @@ protected:
   RTT::InputPort<std::vector<Setpoint> > setpoint_port;
   RTT::OutputPort<std::vector<JointState> > jointState_port;
 
-  RTT::Property<int> numberOfJoints_prop;
   RTT::Property<bool> autoSynchronize_prop;
 
 private:
   void mp2i(const double* motors, double* joints);
-  void i2mp(const double* joints, double* motors);
+  bool i2mp(const double* joints, double* motors);
+
+  bool checkMotorPosition(const double *);
+
   std::vector<Setpoint> setpoint;
   std::vector<JointState> jointState;
 

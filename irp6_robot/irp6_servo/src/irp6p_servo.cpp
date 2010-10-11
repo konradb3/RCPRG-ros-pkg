@@ -13,12 +13,11 @@
 
 IRP6pServo::IRP6pServo(const std::string& name) :
     RTT::TaskContext(name, PreOperational), setpoint_port("setpoint"), jointState_port(
-      "jointState"), numberOfJoints_prop("numberOfJoints", "", 0), autoSynchronize_prop("auto_synchronize" , "", false), hi_(NUMBER_OF_DRIVES)
+      "jointState"), autoSynchronize_prop("auto_synchronize" , "", false), hi_(NUMBER_OF_DRIVES)
 {
   this->ports()->addPort(setpoint_port);
   this->ports()->addPort(jointState_port);
 
-  this->addProperty(numberOfJoints_prop);
   this->addProperty(autoSynchronize_prop); 
 }
 
@@ -77,6 +76,7 @@ bool IRP6pServo::startHook()
       
       if(autoSynchronize_prop.get())
       {
+	std::cout << "synchronizing .. " << std::endl;
         synchro_state_ = MOVE_TO_SYNCHRO_AREA;
         state_ = SYNCHRONIZING;
         synchro_drive_ = 0;
@@ -112,18 +112,25 @@ void IRP6pServo::updateHook()
   case SERVOING :
     if (setpoint_port.read(setpoint) == RTT::NewData)
     {
+      std::cout << "received new setpoint " << std::endl;
       double joint_pos_new[NUMBER_OF_DRIVES];
       double motor_pos_new[NUMBER_OF_DRIVES];
 
       for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
         joint_pos_new[i] = setpoint[i].position;
       
-      i2mp(joint_pos_new, motor_pos_new);
-
-      for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+      if(i2mp(joint_pos_new, motor_pos_new))
       {
-        pos_inc_[i] = (int64_t)((motor_pos_new[i] - motor_pos_old_[i]) * (ENC_RES[i]/(2*M_PI)));
-        motor_pos_old_[i] = motor_pos_new[i]; 
+        for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+        {
+          pos_inc_[i] = (int64_t)((motor_pos_new[i] - motor_pos_old_[i]) * (ENC_RES[i]/(2*M_PI)));
+          motor_pos_old_[i] = motor_pos_new[i]; 
+        }
+      } else 
+      {
+        std::cout << "setpoint out of motor range !!! " << std::endl;
+        for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
+          pos_inc_[i] = 0; 
       }
 
     }
@@ -139,10 +146,11 @@ void IRP6pServo::updateHook()
     case MOVE_TO_SYNCHRO_AREA :
          if (hi_.isInSynchroArea(synchro_drive_))
          {
-           std::cout << "MOVE_TO_SYNCHRO_AREA cmp" << std::endl;
+           std::cout << "[servo " << synchro_drive_ << " ] MOVE_TO_SYNCHRO_AREA cmp" << std::endl;
            pos_inc_[synchro_drive_] = 0;
-           delay_ = 250;
+           delay_ = 500;
            synchro_state_ = STOP;
+           std::cout << "[servo " << synchro_drive_ << " ] STOP start" << std::endl;
          }
          else
          {
@@ -150,17 +158,18 @@ void IRP6pServo::updateHook()
          }
       break;
     case STOP :
-      if(delay_++ > 0)
+      if(delay_-- < 0)
       {
-        std::cout << "STOP cmp" << std::endl;
+        std::cout << "[servo " << synchro_drive_ << " ] STOP cmp" << std::endl;
         synchro_state_ = MOVE_FROM_SYNCHRO_AREA;
         hi_.startSynchro(synchro_drive_);
+        std::cout << "[servo " << synchro_drive_ << " ] MOVE_FROM_SYNCHRO_AREA start" << std::endl;
       }
       break;
     case MOVE_FROM_SYNCHRO_AREA :
       if (hi_.isImpulseZero(0))
       {
-        std::cout << "MOVE_FROM_SYNCHRO_AREA cmp" << std::endl;
+        std::cout << "[servo " << synchro_drive_ << " ] MOVE_FROM_SYNCHRO_AREA cmp " << std::endl;
         hi_.finishSynchro(synchro_drive_);
         hi_.resetPosition(synchro_drive_);
         reg_[synchro_drive_].reset();
@@ -185,11 +194,27 @@ void IRP6pServo::updateHook()
   }
 
   for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-    pwm[i] = reg_[i].doServo(pos_inc_[i], hi_.getIncrement(i));
+  {
+    int64_t increment = hi_.getIncrement(i);
+    if(abs(increment) > 400)
+    {
+      std::cout << "!!!! increment > 400 !!!!" << std::endl;
+      increment = 0;
+    }
+
+    if(abs(pos_inc_[i]) > 400)
+    {
+      std::cout << "!!!! pos_inc > 400 !!!!" << std::endl;
+      pos_inc_[i] = 0;
+    }
+
+    pwm[i] = reg_[i].doServo(pos_inc_[i], increment);
+  }
 
   try
   {
-    //hi_.insertSetValue(0, pwm);
+    for(unsigned int i = 0; i < 6; i++)
+      hi_.insertSetValue(i, pwm[i]);
     hi_.readWriteHardware();
   }
   catch (const std::exception& e)
@@ -200,6 +225,9 @@ void IRP6pServo::updateHook()
   for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
     motor_pos[i] = ((double)hi_.getPosition(i) / (ENC_RES[i]/(2*M_PI)));
   
+  if(!checkMotorPosition(motor_pos))
+    std::cout << "current motor state out of range !!!" << std::endl;
+
   mp2i(motor_pos, joint_pos_);
   
   for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
@@ -268,7 +296,7 @@ void IRP6pServo::mp2i(const double* motors, double* joints)
 
 }
 
-void IRP6pServo::i2mp(const double* joints, double* motors)
+bool IRP6pServo::i2mp(const double* joints, double* motors)
 {
   const double sl123 = 7.789525e+04;
   const double mi1 = 6.090255e+04;
@@ -277,43 +305,81 @@ void IRP6pServo::i2mp(const double* joints, double* motors)
   const double mi2 = -4.410000e+04;
   const double ni2 = -5.124000e+04;
 
-	// Niejednoznacznosc polozenia dla 3-tej osi (obrot kisci < 180).
-	const double joint_3_revolution = M_PI;
-	// Niejednoznacznosc polozenia dla 4-tej osi (obrot kisci > 360).
-	const double axis_4_revolution = 2 * M_PI;
+  // Niejednoznacznosc polozenia dla 3-tej osi (obrot kisci < 180).
+  const double joint_3_revolution = M_PI;
+  // Niejednoznacznosc polozenia dla 4-tej osi (obrot kisci > 360).
+  const double axis_4_revolution = 2 * M_PI;
 
-	// Obliczanie kata obrotu walu silnika napedowego kolumny
-	motors[0] = GEAR[0] * joints[0] + SYNCHRO_JOINT_POSITION[0];
+  // Obliczanie kata obrotu walu silnika napedowego kolumny
+  motors[0] = GEAR[0] * joints[0] + SYNCHRO_JOINT_POSITION[0];
 
-	// Obliczanie kata obrotu walu silnika napedowego ramienia dolnego
-	motors[1] = GEAR[1] * sqrt(sl123 + mi1 * cos(joints[1]) + ni1
-			* sin(-joints[1])) + SYNCHRO_JOINT_POSITION[1];
+  // Obliczanie kata obrotu walu silnika napedowego ramienia dolnego
+  motors[1] = GEAR[1] * sqrt(sl123 + mi1 * cos(joints[1]) + ni1
+		* sin(-joints[1])) + SYNCHRO_JOINT_POSITION[1];
 
-	// Obliczanie kata obrotu walu silnika napedowego ramienia gornego
-	motors[2] = GEAR[2] * sqrt(sl123 + mi2 * cos(joints[2] + joints[1] + M_PI_2) + ni2
+  // Obliczanie kata obrotu walu silnika napedowego ramienia gornego
+  motors[2] = GEAR[2] * sqrt(sl123 + mi2 * cos(joints[2] + joints[1] + M_PI_2) + ni2
 			* sin(-(joints[2] + joints[1] + M_PI_2))) + SYNCHRO_JOINT_POSITION[2];
 
-	// Obliczanie kata obrotu walu silnika napedowego obotu kisci T
-	// jesli jest mniejsze od -pi/2
-	double joints_tmp3 = joints[3] + joints[2] + joints[1] + M_PI_2;
-	if (joints_tmp3 < M_PI_2)
-		joints_tmp3 += joint_3_revolution;
-	motors[3] = GEAR[3] * (joints_tmp3 + THETA[3]) + SYNCHRO_JOINT_POSITION[3];
+  // Obliczanie kata obrotu walu silnika napedowego obotu kisci T
+  // jesli jest mniejsze od -pi/2
+  double joints_tmp3 = joints[3] + joints[2] + joints[1] + M_PI_2;
+  if (joints_tmp3 < M_PI_2)
+    joints_tmp3 += joint_3_revolution;
+  motors[3] = GEAR[3] * (joints_tmp3 + THETA[3]) + SYNCHRO_JOINT_POSITION[3];
 
-	// Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
-	motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4]
-			+ joints[3] + joints[2] + joints[1] + M_PI_2;
+  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci V
+  motors[4] = GEAR[4] * joints[4] + SYNCHRO_JOINT_POSITION[4]
+            + joints[3] + joints[2] + joints[1] + M_PI_2;
 
-	// Ograniczenie na obrot.
-	while (motors[4] < -80)
-		motors[4] += axis_4_revolution;
-	while (motors[4] > 490)
-		motors[4] -= axis_4_revolution;
+  // Ograniczenie na obrot.
+  while (motors[4] < -80)
+    motors[4] += axis_4_revolution;
+  while (motors[4] > 490)
+    motors[4] -= axis_4_revolution;
 
-	// Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
-	motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5];
+  // Obliczanie kata obrotu walu silnika napedowego obrotu kisci N
+  motors[5] = GEAR[5] * joints[5] + SYNCHRO_JOINT_POSITION[5];
 
+  return checkMotorPosition(motors);
 }
+
+bool IRP6pServo::checkMotorPosition(const double * motor_position)
+{
+
+  if (motor_position[0] < LOWER_MOTOR_LIMIT[0]) // Kat f1 mniejszy od minimalnego
+    return false;//throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_0);
+  else if (motor_position[0] > UPPER_MOTOR_LIMIT[0]) // Kat f1 wiekszy od maksymalnego
+    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_0);
+
+  if (motor_position[1] < LOWER_MOTOR_LIMIT[1]) // Kat f2 mniejszy od minimalnego
+    return false;//throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_1);
+  else if (motor_position[1] > UPPER_MOTOR_LIMIT[1]) // Kat f2 wiekszy od maksymalnego
+    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_1);
+
+  if (motor_position[2] < LOWER_MOTOR_LIMIT[2]) // Kat f3 mniejszy od minimalnego
+    return false;//throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_2);
+  else if (motor_position[2] > UPPER_MOTOR_LIMIT[2]) // Kat f3 wiekszy od maksymalnego
+    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_2);
+
+  if (motor_position[3] < LOWER_MOTOR_LIMIT[3]) // Kat f4 mniejszy od minimalnego
+    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_3);
+  else if (motor_position[3] > UPPER_MOTOR_LIMIT[3]) // Kat f4 wiekszy od maksymalnego
+    return false; //throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_3);
+
+  if (motor_position[4] < LOWER_MOTOR_LIMIT[4]) // Kat f5 mniejszy od minimalnego
+    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_4);
+  else if (motor_position[4] > UPPER_MOTOR_LIMIT[4]) // Kat f5 wiekszy od maksymalnego
+    return false; //throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_4);
+
+  if (motor_position[5] < LOWER_MOTOR_LIMIT[5]) // Kat f6 mniejszy od minimalnego
+    return false; //throw NonFatal_error_2(BEYOND_LOWER_LIMIT_AXIS_5);
+  else if (motor_position[5] > UPPER_MOTOR_LIMIT[5]) // Kat f6 wiekszy od maksymalnego
+    return false;//throw NonFatal_error_2(BEYOND_UPPER_LIMIT_AXIS_5);
+
+  return true;
+} //: check_motor_position
+
 
 Regulator::Regulator()
 {
