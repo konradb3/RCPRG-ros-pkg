@@ -324,7 +324,7 @@ bool IRP6pServo::i2mp(const double* joints, double* motors)
   // Obliczanie kata obrotu walu silnika napedowego obotu kisci T
   // jesli jest mniejsze od -pi/2
   double joints_tmp3 = joints[3] + joints[2] + joints[1] + M_PI_2;
-  if (joints_tmp3 < M_PI_2)
+  if (joints_tmp3 < -M_PI_2)
     joints_tmp3 += joint_3_revolution;
   motors[3] = GEAR[3] * (joints_tmp3 + THETA[3]) + SYNCHRO_JOINT_POSITION[3];
 
