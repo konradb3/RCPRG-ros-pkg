@@ -82,7 +82,7 @@ void JointSplineTrajectoryGenerator::updateHook()
       sampleSpline(coeff[i], time * dt, setpoint[i].position, setpoint[i].velocity, setpoint[i].acceleration);
     setpoint_port.write(setpoint);
 
-    if (time == endTime)
+    if (time >= endTime)
     {
       if (!bufferReady)
       {
