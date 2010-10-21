@@ -23,6 +23,7 @@ int	main(int argc, char**	argv)
 {
 	ros::init(argc, argv, "elektron_base_node");
 	ros::NodeHandle n;
+  ros::NodeHandle nh("~");
 
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 1);
 	
@@ -34,7 +35,7 @@ int	main(int argc, char**	argv)
 
 	std::string dev;
 		
-	n.getParam("device", dev);
+	nh.getParam("device", dev);
 
 	nav_msgs::Odometry odom;
 	odom.header.frame_id = "odom";
