@@ -58,42 +58,42 @@ struct tgetdata
 class Protonek
 {
 public:
-	Protonek(const std::string& port, int baud = BAUD);
-	~Protonek();
+  Protonek(const std::string& port, int baud = BAUD);
+  ~Protonek();
 
-	void update();
+  void update();
 
-	void setVelocity(double lvel, double rvel);
-	void getVelocity(double &lvel, double &rvel);
+  void setVelocity(double lvel, double rvel);
+  void getVelocity(double &lvel, double &rvel);
 
   void updateOdometry();
-	void getRawOdometry(double &linc, double &rinc);
-	void getOdometry(double &x, double &y, double &a);
-	void setOdometry(double x, double y, double a);
+  void getRawOdometry(double &linc, double &rinc);
+  void getOdometry(double &x, double &y, double &a);
+  void setOdometry(double x, double y, double a);
 
-	bool isConnected();
+  bool isConnected();
 
-	double m_per_tick;
-	double robot_axle_length;
-	double enc_ticks;
+  double m_per_tick;
+  double robot_axle_length;
+  double enc_ticks;
 
 private:
-	// serial port descriptor
-	int fd;
-	struct termios oldtio;
-	bool connected;
+  // serial port descriptor
+  int fd;
+  struct termios oldtio;
+  bool connected;
 
-	tsetvel setvel;
-	tgetdata getdata;
+  tsetvel setvel;
+  tgetdata getdata;
 
-	int llpos;
-	int lrpos;
+  int llpos;
+  int lrpos;
 
-	double xpos;
-	double ypos;
-	double apos;
+  double xpos;
+  double ypos;
+  double apos;
 
-	bool odom_initialized;
+  bool odom_initialized;
 
 };
 

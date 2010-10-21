@@ -19,71 +19,72 @@ using namespace std;
 double
 ang_nor_rad(double rad)
 {
-        static double TWO_PI = 2.0*M_PI;
-        for (;;) {
-                if (rad >= M_PI)
-                        rad -= TWO_PI;
-                else if (rad <= -M_PI)
-                        rad += TWO_PI;
-                else
-                        return (rad);
-        }
+  static double TWO_PI = 2.0*M_PI;
+  for (;;)
+  {
+    if (rad >= M_PI)
+      rad -= TWO_PI;
+    else if (rad <= -M_PI)
+      rad += TWO_PI;
+    else
+      return (rad);
+  }
 }
 
 Protonek::Protonek(const std::string& port, int baud)
 {
-	connected = false;
-	
-	llpos = 0;
-	lrpos = 0;
+  connected = false;
 
-	xpos = 0;
-	ypos = 0;
-	apos = 0;
+  llpos = 0;
+  lrpos = 0;
 
-	setvel.start = 'x';
-	setvel.cmd = 'a';
-	setvel.lvel = 0;
-	setvel.rvel = 0;
+  xpos = 0;
+  ypos = 0;
+  apos = 0;
 
-	odom_initialized = false;
+  setvel.start = 'x';
+  setvel.cmd = 'a';
+  setvel.lvel = 0;
+  setvel.rvel = 0;
 
-	robot_axle_length = AXLE_LENGTH;
-	m_per_tick = M_PI * WHEEL_DIAM / ENC_TICKS;
-	enc_ticks = ENC_TICKS;
+  odom_initialized = false;
 
-	fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-	if(fd >= 0)
-	{
-		tcgetattr(fd, &oldtio);
+  robot_axle_length = AXLE_LENGTH;
+  m_per_tick = M_PI * WHEEL_DIAM / ENC_TICKS;
+  enc_ticks = ENC_TICKS;
 
-		// set up new settings
-		struct termios newtio;
-		memset(&newtio, 0, sizeof(newtio));
-		newtio.c_cflag = CBAUD | CS8 | CLOCAL | CREAD | CSTOPB;
-		newtio.c_iflag = INPCK; //IGNPAR;
-		newtio.c_oflag = 0;
-		newtio.c_lflag = 0;
-		if (cfsetispeed(&newtio, baud) < 0 || cfsetospeed(&newtio, baud) < 0) 
-		{
-			fprintf(stderr, "Failed to set serial baud rate: %d\n", baud);
-			tcsetattr(fd, TCSANOW, &oldtio);
-			close(fd);
-			fd = -1;
-			return;
-		}
-		// activate new settings
-		tcflush(fd, TCIFLUSH);
-		tcsetattr(fd, TCSANOW, &newtio);
-		connected = true;
-	}
+  fd = open(port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+  if (fd >= 0)
+  {
+    tcgetattr(fd, &oldtio);
+
+    // set up new settings
+    struct termios newtio;
+    memset(&newtio, 0, sizeof(newtio));
+    newtio.c_cflag = CBAUD | CS8 | CLOCAL | CREAD | CSTOPB;
+    newtio.c_iflag = INPCK; //IGNPAR;
+    newtio.c_oflag = 0;
+    newtio.c_lflag = 0;
+    if (cfsetispeed(&newtio, baud) < 0 || cfsetospeed(&newtio, baud) < 0)
+    {
+      fprintf(stderr, "Failed to set serial baud rate: %d\n", baud);
+      tcsetattr(fd, TCSANOW, &oldtio);
+      close(fd);
+      fd = -1;
+      return;
+    }
+    // activate new settings
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &newtio);
+    connected = true;
+  }
 }
 
 Protonek::~Protonek()
 {
   // restore old port settings
   if (fd > 0)
-	  tcsetattr(fd, TCSANOW, &oldtio);
+    tcsetattr(fd, TCSANOW, &oldtio);
   close(fd);
 }
 
@@ -93,7 +94,7 @@ void Protonek::update()
   tcflush(fd, TCIFLUSH);
   write(fd, &setvel, sizeof(setvel));
 
-  while(ret < sizeof(getdata))
+  while (ret < sizeof(getdata))
     ret += read(fd, ((char*)&getdata)+ret, sizeof(getdata)-ret);
 
 }
@@ -102,15 +103,15 @@ void Protonek::setVelocity(double lvel, double rvel)
 {
   setvel.lvel = (int16_t)(lvel*(1/m_per_tick)*0.1); // Convert SI units to internal units
   setvel.rvel = (int16_t)(rvel*(1/m_per_tick)*0.1);
-  if(setvel.rvel > 120)
-	setvel.rvel = 120;
-  else if(setvel.rvel < -120)
-	setvel.rvel = -120;
+  if (setvel.rvel > 120)
+    setvel.rvel = 120;
+  else if (setvel.rvel < -120)
+    setvel.rvel = -120;
 
-  if(setvel.lvel > 120)
-	setvel.lvel = 120;
-  else if(setvel.lvel < -120)
-	setvel.lvel = -120;
+  if (setvel.lvel > 120)
+    setvel.lvel = 120;
+  else if (setvel.lvel < -120)
+    setvel.lvel = -120;
 }
 
 void Protonek::getVelocity(double &lvel, double &rvel)
@@ -131,13 +132,14 @@ void Protonek::updateOdometry()
   lrpos = rpos;
   if (odom_initialized == true)
   {
-  apos += atan((linc - rinc)/robot_axle_length);
-  apos = ang_nor_rad(apos);
-  double dist = (rinc + linc)/2;
+    apos += atan((linc - rinc)/robot_axle_length);
+    apos = ang_nor_rad(apos);
+    double dist = (rinc + linc)/2;
 
-  xpos += dist * cos(apos);
-  ypos += dist * sin(apos);
-  }else odom_initialized = true;
+    xpos += dist * cos(apos);
+    ypos += dist * sin(apos);
+  }
+  else odom_initialized = true;
 
 }
 
@@ -169,5 +171,5 @@ void Protonek::getRawOdometry(double &linc, double &rinc)
 
 bool Protonek::isConnected()
 {
-	return connected;
+  return connected;
 }
