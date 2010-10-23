@@ -18,12 +18,12 @@
 /** Main entry point */
 int main(int argc, char **argv) {
 	int height, width, input;
-	std::string dev;
+	std::string dev, frame_id;
 	sensor_msgs::Image image;
 	sensor_msgs::CameraInfo cam_info;
 
 	ros::init(argc, argv, "camerav4l2_node");
-	ros::NodeHandle node("camera");
+	ros::NodeHandle node;
 	ros::NodeHandle nh("~");
 
 	CameraInfoManager cinfo(nh);
@@ -36,34 +36,33 @@ int main(int argc, char **argv) {
 	nh.param<int>("height", height, 480);
 	nh.param<int>("input", input, 0);
 	nh.param<std::string>("device", dev, "/dev/video0");
+  nh.param<std::string>("frame_id", frame_id, "camera");
 
 	ROS_INFO("Opening device : %s", dev.c_str());
 	Camera cam(dev.c_str(), width, height);
 
 	cam.setInput(input);
 
-	image.header.frame_id = "camara";
-	image.header.seq = 0;
+	image.header.frame_id = frame_id;
 	image.height = cam.height;
 	image.width = cam.width;
 	image.encoding = sensor_msgs::image_encodings::RGB8;
 
-
-	while (node.ok()) {
+	while (ros::ok()) {
 		unsigned char* ptr = cam.Update();
-		++image.header.seq;
+	
 		image.header.stamp = ros::Time::now();
 		int image_size = cam.width * cam.height * 3;
 		image.step = cam.width * 3;
-        image.data.resize(image_size);
-        memcpy(&image.data[0], ptr, image_size);
+    image.data.resize(image_size);
+    memcpy(&image.data[0], ptr, image_size);
 
-        cam_info = cinfo.getCameraInfo();
+    cam_info = cinfo.getCameraInfo();
 
-        cam_info.header.frame_id = image.header.frame_id;
-        cam_info.header.stamp = image.header.stamp;
+    cam_info.header.frame_id = image.header.frame_id;
+    cam_info.header.stamp = image.header.stamp;
 
-        image_pub.publish(image, cam_info);
+    image_pub.publish(image, cam_info);
 
 		ros::spinOnce();
 	}

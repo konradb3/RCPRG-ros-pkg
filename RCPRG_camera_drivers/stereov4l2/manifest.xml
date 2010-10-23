@@ -1,13 +1,13 @@
 <package>
-  <description brief="camerav4l2">
+  <description brief="stereov4l2">
 
-     camerav4l2
+     stereov4l2
 
   </description>
   <author>Konrad Banachowicz</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
-  <url>http://ros.org/wiki/camerav4l2</url>
+  <url>http://ros.org/wiki/stereov4l2</url>
   <depend package="image_transport"/>
   <depend package="tf"/>
   <depend package="camera_info_manager"/>

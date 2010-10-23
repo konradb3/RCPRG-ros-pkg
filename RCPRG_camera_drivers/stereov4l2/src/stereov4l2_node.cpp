@@ -18,11 +18,11 @@
 /** Main entry point */
 int main(int argc, char **argv) {
 	int height, width, input_l, input_r;
-	std::string dev_l, dev_r, left_url, right_url;
-	sensor_msgs::Image image;
+	std::string dev_l, dev_r, left_url, right_url, frame_id_l, frame_id_r;
+	sensor_msgs::Image image_l, image_r;
 	sensor_msgs::CameraInfo cam_info_l, cam_info_r;
 
-	ros::init(argc, argv, "camerav4l2_node");
+	ros::init(argc, argv, "stereov4l2_node");
 	ros::NodeHandle node;
 	ros::NodeHandle nh("~");
 
@@ -37,10 +37,12 @@ int main(int argc, char **argv) {
 
 	nh.param<int>("width", width, 640);
 	nh.param<int>("height", height, 480);
-	nh.param<int>("input_l", input_l, 1);
-	nh.param<int>("input_r", input_r, 0);
-	nh.param<std::string>("device_l", dev_l, "/dev/video0");
-	nh.param<std::string>("device_r", dev_r, "/dev/video1");
+	nh.param<int>("left/input", input_l, 1);
+	nh.param<int>("right/input", input_r, 0);
+	nh.param<std::string>("left/device", dev_l, "/dev/video0");
+	nh.param<std::string>("right/device", dev_r, "/dev/video1");
+  nh.param<std::string>("left/frame_id", frame_id_l, "camera_l");
+  nh.param<std::string>("right/frame_id", frame_id_r, "camera_r");
 
  	nh.param<std::string>("left/camera_info_url", left_url, "/tmp/left.yaml");
 	nh.param<std::string>("right/camera_info_url", right_url, "/tmp/right.yaml");
@@ -55,33 +57,40 @@ int main(int argc, char **argv) {
 	cam_l.setInput(input_l);
 	cam_r.setInput(input_r);
 
-	image.header.frame_id = "camara";
-	image.header.seq = 0;
-	image.height = cam_l.height;
-	image.width = cam_l.width;
-	image.encoding = sensor_msgs::image_encodings::BGR8;
+	image_l.header.frame_id = frame_id_l;
+	image_l.height = cam_l.height;
+	image_l.width = cam_l.width;
+	image_l.encoding = sensor_msgs::image_encodings::BGR8;
+
+	image_r.header.frame_id = frame_id_r;
+	image_r.height = cam_l.height;
+	image_r.width = cam_l.width;
+	image_r.encoding = sensor_msgs::image_encodings::BGR8;
+
+  cam_info_l = cinfo_l.getCameraInfo();
+	cam_info_r = cinfo_r.getCameraInfo();
+
+  cam_info_r.header.frame_id = image_r.header.frame_id;
+  cam_info_l.header.frame_id = image_l.header.frame_id;
 
 
 	while (node.ok()) {
 		unsigned char* ptr_l = cam_l.Update();
 		unsigned char* ptr_r = cam_r.Update();
-		++image.header.seq;
-		image.header.stamp = ros::Time::now();
+
+		cam_info_l.header.stamp = cam_info_r.header.stamp = image_r.header.stamp = image_l.header.stamp = ros::Time::now();
+
 		int image_size = cam_l.width * cam_l.height * 3;
-		image.step = cam_l.width * 3;
-        	image.data.resize(image_size);
-        	memcpy(&image.data[0], ptr_l, image_size);
-
-        	cam_info_l = cinfo_l.getCameraInfo();
-		cam_info_r = cinfo_r.getCameraInfo();
-
-       		cam_info_r.header.frame_id = cam_info_l.header.frame_id = image.header.frame_id;
-        	cam_info_r.header.stamp = cam_info_l.header.stamp = image.header.stamp;
-
-        	image_pub_l.publish(image, cam_info_l);
+		image_l.step = cam_l.width * 3;
+    image_l.data.resize(image_size);
+    memcpy(&image_l.data[0], ptr_l, image_size);
+    image_pub_l.publish(image_l, cam_info_l);
 		
-		memcpy(&image.data[0], ptr_r, image_size);
-		image_pub_r.publish(image, cam_info_r);
+    image_size = cam_r.width * cam_r.height * 3;
+		image_r.step = cam_r.width * 3;
+    image_r.data.resize(image_size);
+		memcpy(&image_r.data[0], ptr_r, image_size);
+		image_pub_r.publish(image_r, cam_info_r);
 
 		ros::spinOnce();
 	}
