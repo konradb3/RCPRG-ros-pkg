@@ -10,7 +10,11 @@
   <url>http://ros.org/wiki/irp6_launch</url>
   <depend package="xacro"/>
   <depend package="irp6_defs"/>
-
+  <depend package="irp6_servo"/>
+  <depend package="oro_joint_state_publisher"/>
+  <depend package="fake_servo"/>
+  <depend package="oro_joint_trajectory_action"/>
+  <depend package="joint_spline_trajectory_generator"/>
 </package>
 
 
