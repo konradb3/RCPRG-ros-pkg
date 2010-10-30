@@ -52,7 +52,7 @@ bool IRP6pServo::configureHook()
   for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
     reg_[i].setParam(A[i], BB0[i], BB1[i]);
 
-  jointState.resize(NUMBER_OF_DRIVES);
+  jointState.states.resize(NUMBER_OF_DRIVES);
   return true;
 }
 
@@ -117,7 +117,7 @@ void IRP6pServo::updateHook()
       double motor_pos_new[NUMBER_OF_DRIVES];
 
       for(unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
-        joint_pos_new[i] = setpoint[i].position;
+        joint_pos_new[i] = setpoint.setpoints[i].position;
       
       if(i2mp(joint_pos_new, motor_pos_new))
       {
@@ -232,8 +232,9 @@ void IRP6pServo::updateHook()
   
   for (unsigned int i = 0; i < NUMBER_OF_DRIVES; i++)
   {
-    jointState[i].position = joint_pos_[i];
-    jointState[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
+    jointState.states[i].position = joint_pos_[i];
+    jointState.states[i].velocity = (joint_pos_[i] - joint_pos_old_[i]) / DT;
+    jointState.states[i].effort = 0.0;
     joint_pos_old_[i] = joint_pos_[i];
   }
 

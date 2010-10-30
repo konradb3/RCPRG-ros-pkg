@@ -15,8 +15,8 @@
 #include <rtt/Port.hpp>
 #include <rtt/Property.hpp>
 
-#include "Setpoint.hpp"
-#include "JointState.hpp"
+#include "oro_servo_msgs/Setpoints.h"
+#include "oro_servo_msgs/ServoStates.h"
 
 #include "hi_moxa.h"
 
@@ -93,8 +93,8 @@ public:
   bool startHook();
   void updateHook();
 protected:
-  RTT::InputPort<std::vector<Setpoint> > setpoint_port;
-  RTT::OutputPort<std::vector<JointState> > jointState_port;
+  RTT::InputPort<oro_servo_msgs::Setpoints> setpoint_port;
+  RTT::OutputPort<oro_servo_msgs::ServoStates> jointState_port;
 
   RTT::Property<bool> autoSynchronize_prop;
 
@@ -104,8 +104,8 @@ private:
 
   bool checkMotorPosition(const double *);
 
-  std::vector<Setpoint> setpoint;
-  std::vector<JointState> jointState;
+  oro_servo_msgs::Setpoints setpoint;
+  oro_servo_msgs::ServoStates jointState;
 
   hi_moxa::HI_moxa hi_;
   Regulator reg_[NUMBER_OF_DRIVES];
