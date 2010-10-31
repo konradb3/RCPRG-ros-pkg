@@ -1,0 +1,3 @@
+[submodule "orocos_controllers"]
+	path = orocos_controllers
+	url = http://github.com/konradb3/orocos_controllers.git
