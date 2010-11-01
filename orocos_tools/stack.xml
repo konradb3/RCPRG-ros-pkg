@@ -1,5 +1,5 @@
 <stack>
-  <description brief="orocos_tools">orocos_tools</description>
+  <description brief="orocos_tools">This stack contain packages that help integrate OROCOS with ROS.</description>
   <author>Maintained by Konrad Banachowicz</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
