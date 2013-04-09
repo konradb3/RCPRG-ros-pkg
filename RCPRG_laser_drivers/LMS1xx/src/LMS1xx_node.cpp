@@ -52,11 +52,11 @@ int main(int argc, char **argv)
     int num_values;
     if (cfg.angleResolution == 2500)
     {
-      num_values = 541;
+      num_values = 1081;
     }
     else if (cfg.angleResolution == 5000)
     {
-      num_values = 1081;
+      num_values = 541;
     }
     else
     {
