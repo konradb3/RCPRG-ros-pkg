@@ -46,8 +46,8 @@ int main(int argc, char **argv)
     scan_msg.scan_time = 1000.0/cfg.scaningFrequency;
 
     scan_msg.angle_increment = cfg.angleResolution/10000.0 * DEG2RAD;
-    scan_msg.angle_min = cfg.startAngle/10000.0 * DEG2RAD;
-    scan_msg.angle_max = cfg.stopAngle/10000.0 * DEG2RAD;
+    scan_msg.angle_min = - ((cfg.stopAngle - cfg.startAngle)/20000.0 * DEG2RAD);
+    scan_msg.angle_max = (cfg.stopAngle - cfg.startAngle)/20000.0 * DEG2RAD;
 
     int num_values;
     if (cfg.angleResolution == 2500)
